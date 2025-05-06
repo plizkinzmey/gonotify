@@ -4,15 +4,18 @@
 package gonotify
 
 /*
-#cgo CFLAGS: -mmacosx-version-min=10.14 -x objective-c
-#cgo LDFLAGS: -mmacosx-version-min=10.14 -framework Foundation -framework UserNotifications
+#cgo CFLAGS: -x objective-c -mmacosx-version-min=10.14 -I${SRCDIR}/darwin
+#cgo LDFLAGS: -framework Foundation -framework UserNotifications -mmacosx-version-min=10.14
+
 #include <stdlib.h>
-#include "darwin/NotificationBridge.h"
+#include "NotificationBridge.h"
+#include "NotificationBridge.m"
 */
 import "C"
+
 import (
-"errors"
-"unsafe"
+	"errors"
+	"unsafe"
 )
 
 // Реализация showNativeNotification для macOS
@@ -23,12 +26,12 @@ func showNativeNotification(title, message, iconPath string) error {
 	defer C.free(unsafe.Pointer(ctitle))
 	defer C.free(unsafe.Pointer(cmessage))
 	defer C.free(unsafe.Pointer(cicon))
-	
+
 	result := C.ShowNativeNotification(ctitle, cmessage, cicon)
 	if result != 0 {
 		return errors.New("failed to show notification")
 	}
-	
+
 	return nil
 }
 
